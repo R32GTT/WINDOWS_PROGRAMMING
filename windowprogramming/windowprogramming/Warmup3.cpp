@@ -397,15 +397,34 @@ int main()
 		if (in1.size() == 1)
 		{
 
-			if()
+			if(in1[0] == 'd')
 			{
 
 			}
+			else if (in1[0] == 'r')
+			{
+
+			}
+			else if (in1[0] == 'c')
+			{
+
+			}
+			else if (in1[0] == 'h')
+			{
+			}
+			else if ((in1[0] == 'q'))
+			{
+				return;
+			}
 
 		}
+		
 		else // 2칸 이상이면 
 		{
-			std::cout << "Please Enter only ONE alphabet OR number at a time!" << std::endl;
+			if (in1[0] == 'p')
+			{
+
+			}
 		}
 	}
 
