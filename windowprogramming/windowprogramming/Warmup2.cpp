@@ -187,7 +187,10 @@ enum class NUM
 };
 
 
-
+bool operator==(COORD rhs, COORD lhs)
+{
+	return (rhs.X == lhs.X && rhs.Y == lhs.Y);
+}
 
 
 int ChangeValue(int arr[ARR_SIZE][ARR_SIZE], COORD pos)
@@ -200,34 +203,43 @@ int ChangeValue(int arr[ARR_SIZE][ARR_SIZE], COORD pos)
 	}
 	if (cnt > 0)//하나라도 켜져 있다면
 	{
-
-		if (!(NUMMEM[((pos.Y * 10) + pos.X)]._currentnum != NUMMEM[((pos.Y * 10) + pos.X)]._originnum)) //현재값이 원본값이랑 다르지 않다면!(같다면!)
+		if (NUMMEM[((pos.Y * 10) + pos.X)]._originPos == NUMMEM[((pos.Y * 10) + pos.X)]._currentPos) // 현재 좌표값이 원본값이랑 같다면
 		{
-			int sum{};
-
-			for (int base = 0; base < 9; base++)
+			if (!(NUMMEM[((pos.Y * 10) + pos.X)]._currentnum != NUMMEM[((pos.Y * 10) + pos.X)]._originnum)) //현재값이 원본값이랑 다르지 않다면!(같다면!)
 			{
+				int sum{};
 
-				for (int f = 0; f < 10; f++)
+				for (int base = 0; base < 9; base++)
 				{
-					for (int e = 0; e < 10; e++)
-					{
-						if (SinVel[base] && arr[f][e] == base)		// base값이 켜져 있는지 확인하고, ARRAY에서 그 값이 존재할때마다
-							sum += base;							// base 값 만큼 SUM에 더함.
-																	// 비효율적인거 알지만 어떡하나 하나하나 다 체크하는 수밖에 모르는데...
 
+					for (int f = 0; f < 10; f++)
+					{
+						for (int e = 0; e < 10; e++)
+						{
+							if (SinVel[base] && arr[f][e] == base)		// base값이 켜져 있는지 확인하고, ARRAY에서 그 값이 존재할때마다
+								sum += base;							// base 값 만큼 SUM에 더함.
+							// 비효율적인거 알지만 어떡하나 하나하나 다 체크하는 수밖에 모르는데...
+
+						}
 					}
 				}
-			}
-			NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = sum;		// 더한 값들 현재값에 넣어주고
-			NUMMEM[((pos.Y * 10) + pos.X)]._willnum = sum;			// 변경된 값으로 바꿔주고
-			arr[pos.Y][pos.X] = sum;								// 배열 값도 바꿔줌
+				NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = sum;		// 더한 값들 현재값에 넣어주고
+				NUMMEM[((pos.Y * 10) + pos.X)]._willnum = sum;			// 변경된 값으로 바꿔주고
+				arr[pos.Y][pos.X] = sum;								// 배열 값도 바꿔줌
 
+			}
+			else // 현재값이 원본값과 다르다면!
+			{
+				NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((pos.Y * 10) + pos.X)]._originnum; //willnum값은 변치 않을 예정이니 일단 이대로 냅두고...
+				arr[pos.Y][pos.X] = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;							// 배열값 원본으로 복귀
+			}
 		}
-		else // 현재값이 원본값과 다르다면!
+		else //좌표값이 원본값이랑 다르다면!!!
 		{
-			NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((pos.Y * 10) + pos.X)]._originnum; //willnum값은 변치 않을 예정이니 일단 이대로 냅두고...
-			arr[pos.Y][pos.X] = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;							// 배열값 원본으로 복귀
+			COORD ORIGIN = NUMMEM[((pos.Y * 10) + pos.X)]._originPos;											// 원본 좌표값 확인하고 붙여넣기
+			NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((ORIGIN.Y * 10) + ORIGIN.X)]._originnum;;		//원본값에서 복구값 가져와서 현 위치에 붙여넣기
+			arr[pos.Y][pos.X] = NUMMEM[((ORIGIN.Y * 10) + ORIGIN.X)]._originnum;								// 똑같이....
+
 		}
 	}
 	else // 꺼져 있더라도 값 복구 해야 하니...
