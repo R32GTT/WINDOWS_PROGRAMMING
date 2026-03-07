@@ -38,7 +38,7 @@ using Matrix = std::vector<std::vector<int>>;
 
 std::random_device rd;
 std::mt19937 gen(rd());
-std::uniform_int_distribution<int> dis(1, 99);
+std::uniform_int_distribution<int> dis(0, 99);
 
 class ResTable;
 
@@ -66,7 +66,7 @@ public:
 				a.push_back(std::vector<int> {});
 				for (int f = 0; f < 10; f++)
 				{
-					a[i].push_back(0);
+					a[i].push_back(-1);
 				}
 			}
 		}
@@ -116,7 +116,7 @@ void PrintCineStInfo(std::vector<Cinema>& abs, int id) // x번 영화관의 모�
 			std::cout << "\t";
 			for (int c = 0; c < 10; c++)
 			{
-				if (a[i][f][c] == 0)
+				if (a[i][f][c] == -1)
 				{
 					std::cout << "-- ";
 				}
@@ -345,7 +345,7 @@ void Reserve(std::vector<Cinema>& abs) // 영화 예약
 			std::cout << "Invaild Input! Please only enter coords in range of 1~10!" << std::endl;
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
-		if (abs[cid - 1]._seatL[stime][sty - 1][stx - 1] != 0)
+		if (abs[cid - 1]._seatL[stime][sty - 1][stx - 1] != -1)
 		{
 			std::cout << "Seat Already Reserved!" << std::endl;
 			TakenSeat = true;
@@ -367,6 +367,7 @@ void Reserve(std::vector<Cinema>& abs) // 영화 예약
 		<< "\n" << "\t" << "Time: " << abs[cid - 1]._screenTime[stime]
 		<< "\n" << "\t" << "Seat number: " << '(' << stx << ", " << sty << ')'
 		<< "\n" << "\t" << "Your reservation number is " << resnum << ". Thank you for your reservation!" << std::endl;
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		
 
@@ -410,6 +411,7 @@ void Cancel(std::vector<Cinema>& abs)
 		<< "\n" << "\t" << "Reservation is cancelled. Please, come again!" << std::endl;
 	Resmap.erase(in2);
 	CancelSt(abs, id, stime, std::make_pair(stx, sty));
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
 
@@ -480,7 +482,7 @@ int translateCommand(std::string& command, std::vector<Cinema>& abs)
 				int cid = FindCineByMN(abs, command);
 				if (cid == 0)
 				{
-					std::cout << "Invalid Moive name! Please check for typos!" << std::endl;
+					std::cout << "Invalid Movie name! Please check for typos!" << std::endl;
 					return 1;
 				}
 				PrintCineStInfo(abs, cid);
