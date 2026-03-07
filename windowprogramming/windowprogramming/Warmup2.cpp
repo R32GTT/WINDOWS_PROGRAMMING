@@ -32,16 +32,24 @@ std::random_device rd;
 std::default_random_engine re(rd());
 std::uniform_int_distribution<int> uni(0, 9);
 
+
 class BaseClass
 {
 public:
-	BaseClass(COORD pos) : _cursorPos(pos) {}
+	BaseClass(COORD pos, int num) : _originPos(pos), _originnum(num), _currentnum(num) { _currentPos = _originPos; }
+	BaseClass() {};
 public:
-	COORD _cursorPos;
+	COORD _originPos;
+	int _originnum;
 	int _currentnum;
+	int _willnum{};
+	COORD _currentPos;
+
 };
 
-
+int SinVel[10]{}; // 0~9 까지 켜짐/꺼짐 확인하는 배열
+std::unordered_map<int, BaseClass> NUMMEM;
+bool isinited = false;
 
 enum class DIR_KB
 {
@@ -120,11 +128,29 @@ void Render(int arr[][ARR_SIZE])
 
 void init(int arr[][ARR_SIZE])
 {
-	for (auto i = 0; i < ARR_SIZE; i++)
+	int fullcnt = 0;
+	int rnm;
+	for (short i = 0; i < ARR_SIZE; i++)
 	{
-		for (auto f = 0; f < ARR_SIZE; f++)
+		for (short f = 0; f < ARR_SIZE; f++)
 		{
-			arr[i][f] = uni(rd);
+			
+			if (isinited == false)
+			{
+				
+				arr[i][f] = rnm = uni(rd);
+				NUMMEM.insert(std::make_pair(fullcnt, BaseClass(COORD{ f,i }, rnm)));
+				fullcnt++;
+			}
+			else if (isinited)
+			{
+				
+				arr[i][f] = rnm = uni(rd);
+				NUMMEM[fullcnt]._originnum = rnm;
+				NUMMEM[fullcnt]._currentnum = rnm;
+				fullcnt++;
+			}
+			
 		}
 	}
 }
@@ -151,8 +177,7 @@ enum class NUM
 	NI = 0x39,
 };
 
-int SinVel[9]{}; // 0~9 까지 켜짐/꺼짐 확인하는 배열
-bool;
+
 
 
 
@@ -218,10 +243,15 @@ void ChangetoRight(int arr[][ARR_SIZE], COORD& pos) // 배열 양 옆 위치 변
 	pos.X += 1;
 }
 
+
+
+
+
 int main()
 {
 	int BArr[ARR_SIZE][ARR_SIZE];
 	init(BArr);
+	isinited = true;
 	
 	COORD curPos{ uni(rd),uni(rd) };
 
@@ -300,43 +330,95 @@ int main()
 		}
 		else if (GetAsyncKeyState((int)NUM::ON) & 0x8000) // 1
 		{
+			if (SinVel[1] == 1)
+			{
+				SinVel[1] = 0;
+				continue;
+			}
+			SinVel[1] = 1;
 
 		}
 		else if (GetAsyncKeyState((int)NUM::TW) & 0x8000) // 2
 		{
-
+			if (SinVel[2] == 1)
+			{
+				SinVel[2] = 0;
+				continue;
+			}
+			SinVel[2] = 1;
 		}
 		else if (GetAsyncKeyState((int)NUM::TH) & 0x8000) // 3
 		{
-
+			if (SinVel[3] == 1)
+			{
+				SinVel[3] = 0;
+				continue;
+			}
+			SinVel[3] = 1;
 		}
 		else if (GetAsyncKeyState((int)NUM::FO) & 0x8000) // 4
 		{
-
+			if (SinVel[4] == 1)
+			{
+				SinVel[4] = 0;
+				continue;
+			}
+			SinVel[4] = 1;
 		}
 		else if (GetAsyncKeyState((int)NUM::FI) & 0x8000) // 5
 		{
-
+			if (SinVel[5] == 1)
+			{
+				SinVel[5] = 0;
+				continue;
+			}
+			SinVel[5] = 1;
 		}
 		else if (GetAsyncKeyState((int)NUM::SX) & 0x8000) // 6
 		{
-
+			if (SinVel[6] == 1)
+			{
+				SinVel[6] = 0;
+				continue;
+			}
+			SinVel[6] = 1;
 		}
 		else if (GetAsyncKeyState((int)NUM::SV) & 0x8000) // 7
 		{
-
+			if (SinVel[7] == 1)
+			{
+				SinVel[7] = 0;
+				continue;
+			}
+			SinVel[7] = 1;
 		}
 		else if (GetAsyncKeyState((int)NUM::EI) & 0x8000) // 8
 		{
+			if (SinVel[8] == 1)
+			{
+				SinVel[8] = 0;
+				continue;
+			}
+			SinVel[8] = 1;
 
 		}
 		else if (GetAsyncKeyState((int)NUM::NI) & 0x8000) // 9
 		{
-
+			if (SinVel[9] == 1)
+			{
+				SinVel[9] = 0;
+				continue;
+			}
+			SinVel[9] = 1;
 		}
 		else if (GetAsyncKeyState((int)NUM::ZE) & 0x8000) // 0
 		{
-
+			if (SinVel[0] == 1)
+			{
+				SinVel[0] = 0;
+				continue;
+			}
+			SinVel[0] = 1;
 		}
 	}
 		
