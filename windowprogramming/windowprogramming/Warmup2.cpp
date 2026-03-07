@@ -208,9 +208,9 @@ int ChangeValue(int arr[ARR_SIZE][ARR_SIZE], COORD pos)
 			for (int base = 0; base < 9; base++)
 			{
 
-				for (int f = 0; f < 9; f++)
+				for (int f = 0; f < 10; f++)
 				{
-					for (int e = 0; e < 9; e++)
+					for (int e = 0; e < 10; e++)
 					{
 						if (SinVel[base] && arr[f][e] == base)		// base값이 켜져 있는지 확인하고, ARRAY에서 그 값이 존재할때마다
 							sum += base;							// base 값 만큼 SUM에 더함.
@@ -229,6 +229,11 @@ int ChangeValue(int arr[ARR_SIZE][ARR_SIZE], COORD pos)
 			NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((pos.Y * 10) + pos.X)]._originnum; //willnum값은 변치 않을 예정이니 일단 이대로 냅두고...
 			arr[pos.Y][pos.X] = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;							// 배열값 원본으로 복귀
 		}
+	}
+	else // 꺼져 있더라도 값 복구 해야 하니...
+	{
+		NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;
+		arr[pos.Y][pos.X] = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;
 	}
 	
 	return 0;
