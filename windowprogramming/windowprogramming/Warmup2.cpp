@@ -17,14 +17,14 @@
 //• 시작 위치의 숫자는 빨강색으로 출력한다.
 //• 다음의 명령어를 실행한다.
 //• 0~9: 0부터 9 사이의 숫자를 입력하면 입력한 숫자를 배열에서 찾아 파랑 색상으로 출력한다.다시 누르면 원래 색
-//상으로 출력한다.
-//• w / a / s / d : 커서 위치를 좌 / 우 / 상 / 하 움직인다.이때 현재 커서 위치의 문자를 빨강색으로 출력한다.
+//상으로 출력한다.ㅇ
+//• w / a / s / d : 커서 위치를 좌 / 우 / 상 / 하 움직인다.이때 현재 커서 위치의 문자를 빨강색으로 출력한다. ㅇ
 //• 엔터키 : 엔터키를 치면 현재 위치의 숫자에 파랑색상으로 선택된 숫자들의 합이 출력된다.만약 파랑 색상 문자가
 //없으면 현재 숫자가 그대로 출력된다.다시 엔터를 치면 원래의 숫자 값이 출력된다.
-//• ↑ / ↓ : 현재 커서가 놓여져 있는 행을 한 칸 위 / 아래의 행과 바꾼다.
-//• ← / → : 현재 커서가 놓여져 있는 열을 한 칸 좌 / 우의 열과 바꾼다.
-//• r : 숫자를 랜덤하게 재배치하고 리셋 한다.
-//• q : 프로그램 종료한다.
+//• ↑ / ↓ : 현재 커서가 놓여져 있는 행을 한 칸 위 / 아래의 행과 바꾼다. ㅇ
+//• ← / → : 현재 커서가 놓여져 있는 열을 한 칸 좌 / 우의 열과 바꾼다. ㅇ
+//• r : 숫자를 랜덤하게 재배치하고 리셋 한다. ㅇ
+//• q : 프로그램 종료한다. ㅇ
 
 #define ARR_SIZE 10
 
@@ -86,9 +86,18 @@ public:
 	static void SetCursorColor(ConsoleColor color);
 };
 
-ConsoleColor GetTileColor(COORD pos)
+ConsoleColor GetTileColor(COORD pos, COORD pos2, int c)
 {
+	if (pos.X == pos2.X && pos.Y == pos2.Y)//커서 색 반환
+	{
+		return ConsoleColor::RED;
+	}
+	
+	if (SinVel[c] == 1)
+			return ConsoleColor::BLUE;
+	
 	return ConsoleColor::WHITE;
+	
 }
 
 void ConsoleHelper::SetCursorColor(ConsoleColor color)
@@ -106,19 +115,20 @@ void ConsoleHelper::SetCursorPosition(int x, int y)
 
 
 
-void Render(int arr[][ARR_SIZE])
+void Render(int arr[][ARR_SIZE], COORD pos)
 {
 	ConsoleHelper::SetCursorPosition(0, 0);
 
-	int c;
+	int c{};
 
 	for (int y = 0; y < ARR_SIZE; y++)
 	{
 		for (int x = 0; x < ARR_SIZE; x++)
 		{
-			ConsoleColor color = GetTileColor(COORD(y, x));
-			ConsoleHelper::SetCursorColor(color);
 			c = arr[y][x];
+			ConsoleColor color = GetTileColor(COORD(y, x),COORD(pos.Y,pos.X), c);
+			ConsoleHelper::SetCursorColor(color);
+			
 			std::cout << c << ' ';
 		}
 
@@ -246,7 +256,6 @@ void ChangetoRight(int arr[][ARR_SIZE], COORD& pos) // 배열 양 옆 위치 변
 
 
 
-
 int main()
 {
 	int BArr[ARR_SIZE][ARR_SIZE];
@@ -258,7 +267,7 @@ int main()
 	int cnt = 0;
 	while (true)
 	{
-		Render(BArr);
+		Render(BArr,curPos);
 		ConsoleHelper::SetCursorPosition(2*curPos.X,curPos.Y);
 
 		Sleep(100); // 키보드 레이턴시 문제
@@ -295,6 +304,7 @@ int main()
 			//현재값 저장
 			//값 합계 계산
 			//출력
+			ChangeValue(BArr, curPos);
 		}
 		else if (GetAsyncKeyState((int)MOVIN::W) & 0x8000) // 커서 이동 시리즈
 		{
