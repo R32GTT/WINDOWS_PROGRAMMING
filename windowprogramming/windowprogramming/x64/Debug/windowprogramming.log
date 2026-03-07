@@ -1,8 +1,7 @@
 ﻿  Warmup3.cpp
-C:\Users\ALPHA2-1\source\repos\windowprogramming\windowprogramming\Warmup3.cpp(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
-C:\Users\ALPHA2-1\source\repos\windowprogramming\windowprogramming\Warmup3.cpp(222,15): warning C4390: ';': 제어된 빈 문이 있습니다. 이 문이 필요합니까?
-C:\Users\ALPHA2-1\source\repos\windowprogramming\windowprogramming\Warmup3.cpp(314,26): warning C4390: ';': 제어된 빈 문이 있습니다. 이 문이 필요합니까?
-C:\Users\ALPHA2-1\source\repos\windowprogramming\windowprogramming\Warmup3.cpp(402,3): error C2143: 구문 오류: ';'이(가) '}' 앞에 없습니다.
-C:\Users\ALPHA2-1\source\repos\windowprogramming\windowprogramming\Warmup3.cpp(407,2): error C2143: 구문 오류: ';'이(가) '}' 앞에 없습니다.
-C:\Users\ALPHA2-1\source\repos\windowprogramming\windowprogramming\Warmup3.cpp(411,1): error C2143: 구문 오류: ';'이(가) '}' 앞에 없습니다.
-C:\Users\ALPHA2-1\source\repos\windowprogramming\windowprogramming\Warmup3.cpp(402,3): error C2059: 구문 오류: '}'
+C:\Users\sen\source\repos\WINDOWS_PROGRAMMING\windowprogramming\windowprogramming\Warmup3.cpp(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+C:\Users\sen\source\repos\WINDOWS_PROGRAMMING\windowprogramming\windowprogramming\Warmup3.cpp(220,26): warning C4101: 'e' :참조되지 않은 지역 변수입니다.
+C:\Users\sen\source\repos\WINDOWS_PROGRAMMING\windowprogramming\windowprogramming\Warmup3.cpp(165,1): warning C4715: 'IsNumberST': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\sen\source\repos\WINDOWS_PROGRAMMING\windowprogramming\windowprogramming\Warmup3.cpp(189,1): warning C4715: 'GetMovieNameById': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\sen\source\repos\WINDOWS_PROGRAMMING\windowprogramming\windowprogramming\Warmup3.cpp(516,1): warning C4715: 'translateCommand': 모든 제어 경로에서 값을 반환하지는 않습니다.
+  windowprogramming.vcxproj -> C:\Users\sen\source\repos\WINDOWS_PROGRAMMING\windowprogramming\x64\Debug\windowprogramming.exe
