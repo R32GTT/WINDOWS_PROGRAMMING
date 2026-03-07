@@ -44,6 +44,7 @@ class ResTable;
 
 std::unordered_map<int, ResTable> Resmap;
 
+int rccnt = 0;
 
 class Cinema
 {
@@ -191,11 +192,14 @@ std::string GetMovieNameById(const std::vector<Cinema>& abs, int cid) // id로 �
 void ReserveSt(std::vector<Cinema>& abs, int cid, int stime, std::pair<int, int> stxy, int resnum) // 좌석 예약
 {
 	abs[cid - 1]._seatL[stime][stxy.second-1][stxy.first-1] = resnum;
+	rccnt++;
+
 }
 
 void CancelSt(std::vector<Cinema>& abs, int cid, int stime, std::pair<int, int> stxy) // 좌석 취소
 {
 	abs[cid - 1]._seatL[stime][stxy.second-1][stxy.first-1] = 0;
+	rccnt--;
 }
 
 enum class AllErrors
@@ -280,6 +284,11 @@ void Reserve(std::vector<Cinema>& abs) // 영화 예약
 	int stx;	//좌석x
 	int sty;	//좌석y
 	int resnum;	//예약번호
+	if (rccnt >= 100)
+	{
+		std::cout << "Reservation is full!" << std::endl;
+		return;
+	}
 
 	while (true)
 	{
