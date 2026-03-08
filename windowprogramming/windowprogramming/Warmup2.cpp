@@ -193,9 +193,32 @@ bool operator==(COORD rhs, COORD lhs)
 }
 
 
+COORD FindOriginPos(COORD pos) //현 위치에 있는 값의 origin 위치 받고 COORD값 반환
+{
+	/*원본 좌표로 감
+		만약 현 좌표랑 원 좌표랑 같다면
+		본인 위치 반환
+		아니라면
+		재귀함수 ON*/
+	//pos는 처음 시작한 위치
+	//NUMMEM로 원좌표 찾아가는 것임
+	COORD temp = NUMMEM[((pos.Y * 10) + pos.X)]._currentPos;
+	if (temp == NUMMEM[((temp.Y * 10) + temp.X)]._originPos)
+	{
+		return NUMMEM[((temp.Y * 10) + temp.X)]._originPos;
+	}
+	else
+	{
+		return FindOriginPos(temp);
+	}
+
+	
+}
+
 int ChangeValue(int arr[ARR_SIZE][ARR_SIZE], COORD pos)
 {
 	int cnt{};
+	COORD temp = NUMMEM[((pos.Y * 10) + pos.X)]._currentPos;
 	for (auto a = 0; a < 9; a++)
 	{
 		if (SinVel[a])				//괜히 시간만 낭비하는거 같지만,(사실은 맞지만) 이거랑 다르게 구현하려면 저 밑에다가 불린값 설정하는거 하나하나 적어야 하니 일단 이걸로...
@@ -203,51 +226,49 @@ int ChangeValue(int arr[ARR_SIZE][ARR_SIZE], COORD pos)
 	}
 	if (cnt > 0)//하나라도 켜져 있다면
 	{
-		if (NUMMEM[((pos.Y * 10) + pos.X)]._originPos == NUMMEM[((pos.Y * 10) + pos.X)]._currentPos) // 현재 좌표값이 원본값이랑 같다면
+		if (NUMMEM[((temp.Y * 10) + temp.X)]._willnum != NUMMEM[((temp.Y * 10) + temp.X)]._currentnum)
 		{
-			if (!(NUMMEM[((pos.Y * 10) + pos.X)]._currentnum != NUMMEM[((pos.Y * 10) + pos.X)]._originnum)) //현재값이 원본값이랑 다르지 않다면!(같다면!)
+			int sum{};
+
+			for (int base = 0; base < 9; base++)
 			{
-				int sum{};
 
-				for (int base = 0; base < 9; base++)
+				for (int f = 0; f < 10; f++)
 				{
-
-					for (int f = 0; f < 10; f++)
+					for (int e = 0; e < 10; e++)
 					{
-						for (int e = 0; e < 10; e++)
-						{
-							if (SinVel[base] && arr[f][e] == base)		// base값이 켜져 있는지 확인하고, ARRAY에서 그 값이 존재할때마다
-								sum += base;							// base 값 만큼 SUM에 더함.
-							// 비효율적인거 알지만 어떡하나 하나하나 다 체크하는 수밖에 모르는데...
+						if (SinVel[base] && arr[f][e] == base)		// base값이 켜져 있는지 확인하고, ARRAY에서 그 값이 존재할때마다
+							sum += base;							// base 값 만큼 SUM에 더함.
+						// 비효율적인거 알지만 어떡하나 하나하나 다 체크하는 수밖에 모르는데...
 
-						}
 					}
 				}
-				NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = sum;		// 더한 값들 현재값에 넣어주고
-				NUMMEM[((pos.Y * 10) + pos.X)]._willnum = sum;			// 변경된 값으로 바꿔주고
-				arr[pos.Y][pos.X] = sum;								// 배열 값도 바꿔줌
-
 			}
-			else // 현재값이 원본값과 다르다면!
-			{
-				NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((pos.Y * 10) + pos.X)]._originnum; //willnum값은 변치 않을 예정이니 일단 이대로 냅두고...
-				arr[pos.Y][pos.X] = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;							// 배열값 원본으로 복귀
-			}
+			NUMMEM[((temp.Y * 10) + temp.X)]._currentnum = sum;		// 더한 값들 현재값에 넣어주고
+			NUMMEM[((temp.Y * 10) + temp.X)]._willnum = sum;			// 변경된 값으로 바꿔주고
+			arr[pos.Y][pos.X] = sum;								// 배열 값도 바꿔줌
 		}
-		else //좌표값이 원본값이랑 다르다면!!!
+		else
+
 		{
-			COORD ORIGIN = NUMMEM[((pos.Y * 10) + pos.X)]._originPos;											// 원본 좌표값 확인하고 붙여넣기
-			NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((ORIGIN.Y * 10) + ORIGIN.X)]._originnum;;		//원본값에서 복구값 가져와서 현 위치에 붙여넣기
-			arr[pos.Y][pos.X] = NUMMEM[((ORIGIN.Y * 10) + ORIGIN.X)]._originnum;								// 똑같이....
+			//NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((pos.Y * 10) + pos.X)]._originnum; //willnum값은 변치 않을 예정이니 일단 이대로 냅두고...
+			//arr[pos.Y][pos.X] = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;							// 배열값 원본으로 복귀
+			
+			int tempO = NUMMEM[((temp.Y * 10) + temp.X)]._currentnum = NUMMEM[((temp.Y * 10) + temp.X)]._originnum;
+			arr[pos.Y][pos.X] = tempO;
 
 		}
 	}
-	else // 꺼져 있더라도 값 복구 해야 하니...
+	else
+	// 꺼져 있더라도 값 복구 해야 하니...
 	{
-		NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;
-		arr[pos.Y][pos.X] = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;
+		NUMMEM[((temp.Y * 10) + temp.X)]._currentnum = NUMMEM[((temp.Y * 10) + temp.X)]._originnum;
+		arr[pos.Y][pos.X] = NUMMEM[((temp.Y * 10) + temp.X)]._originnum;
 	}
 	
+
+	
+
 	return 0;
 }
 
