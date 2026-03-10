@@ -353,12 +353,14 @@ void Reserve(std::vector<Cinema>& abs) // 영화 예약
 			
 			std::cout << "Invaild Input! Please only enter coords in range of 1~10!" << std::endl;
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			continue;
 		}
 		if (abs[cid - 1]._seatL[stime][sty - 1][stx - 1] != -1)
 		{
 			std::cout << "Seat Already Reserved!" << std::endl;
 			TakenSeat = true;
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			continue;
 		}
 
 	} while ((stx > 10) || (stx < 1) || (sty > 10) || (sty < 1) || TakenSeat);

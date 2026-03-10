@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\Base Board">
+      <UniqueIdentifier>{4bfcfdbc-e28a-4df8-9a2f-cc1c8e8a6ec5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Warmup3.cpp">
@@ -27,5 +30,28 @@
     <ClCompile Include="Warmup4.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Warmup5.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>소스 파일\Base Board</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>소스 파일\Base Board</Filter>
+    </ClCompile>
+    <ClCompile Include="Coord.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Board.h">
+      <Filter>소스 파일\Base Board</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>소스 파일\Base Board</Filter>
+    </ClInclude>
+    <ClInclude Include="Coord.h">
+      <Filter>소스 파일\Base Board</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

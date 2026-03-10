@@ -5,32 +5,23 @@
 #include <algorithm>
 #include <utility>
 #include <random>
-#include <unordered_map>
 #include <Windows.h>
+#include <conio.h>
+#include <WinUser.h>
+#include <memory>
+#include "Board.h"
+#include "Object.h"
+#include "Coord.h"
+
 
 #define ARR_SIZE 20
 #define MAX_ITEM 10
 
 
-std::random_device rd;
-std::default_random_engine re(rd());
-std::uniform_int_distribution<int> uni(0,20);
 
 
 
 
-class Player
-{
-public:
-	Player(COORD pos, int icnt) : _pos(pos), _itemcount(icnt) {}
-
-public:
-	COORD _pos;
-	int _itemcount;
-
-};
-
-int Board[ARR_SIZE][ARR_SIZE]{};
 
 enum class ConsoleColor
 {
@@ -69,102 +60,18 @@ void ConsoleHelper::SetCursorColor(ConsoleColor color)
 
 bool CheckForColision()
 {
+
+	return false;
 }
 
 bool CheckForCoord() // 아이템 생성할때 쓸 것. 현 위치에 아이템 생성 가능한지 확인함.
 {
-
+	return false;
 }
 
-COORD CheckForSpawn(int arr[][ARR_SIZE], int oid) // 장애물 생성할 때 쓸 것. 위치 반납할 예정
-{
-	int x = uni(rd);
-	int y = uni(rd);
-	bool isblocked = false;
-	switch (oid)
-	{
-	case 0: // 3*4 사이즈
-		do
-		{
-			for (int i = 0; i < 4; i++)
-			{
-				for (int f = 0; f < 3; f++)
-				{
-					if (arr[y+i][x+f] != 0)
-					{
-						isblocked = true;
-					}
-				}
-			}
-			x = uni(rd);	//막혀있으면 다시 생성
-			y = uni(rd);
-		}
-		while (isblocked);
-		COORD startpos(x, y);	//안막혔으면 시작위치 반환
-		return startpos;
-		break;
-	case 1: // 5*2 사이즈
-		do
-		{
-			for (int i = 0; i < 2; i++)
-			{
-				for (int f = 0; f < 5; f++)
-				{
-					if (arr[y + i][x + f] != 0)
-					{
-						isblocked = true;
-					}
-				}
-			}
-			x = uni(rd);	//막혀있으면 다시 생성
-			y = uni(rd);
-		} while (isblocked);
-		COORD startpos(x, y);	//안막혔으면 시작위치 반환
-		return startpos;
-		break;
-	case 2: // 4*4 사이즈
-		do
-		{
-			for (int i = 0; i < 4; i++)
-			{
-				for (int f = 0; f < 3; f++)
-				{
-					if (arr[y + i][x + f] != 0)
-					{
-						isblocked = true;
-					}
-				}
-			}
-			x = uni(rd);	//막혀있으면 다시 생성
-			y = uni(rd);
-		} while (isblocked);
-		COORD startpos(x, y);	//안막혔으면 시작위치 반환
-		return startpos;
-		break;
-	}
-}
 
-void SpawnObstacle(int arr[][ARR_SIZE])
-{
-	int obstacleid = 0;
-	
-	switch (obstacleid)
-	{
-	case 0:
-		CheckForSpawn(arr, obstacleid);
 
-		break;
-	case 1:
 
-		break;
-	case 2:
-
-		break;
-	default:
-		break;
-	}
-
-}
 
 void Render(int arr[][ARR_SIZE])
 {
@@ -206,10 +113,101 @@ void Binit(int arr[][ARR_SIZE])
 }
 
 
+enum class MOVIN
+{
+	W = 0x57,
+	A = 0x41,
+	S = 0x53,
+	D = 0x44,
+	I = 0x49,
+	J = 0x4A,
+	K = 0x4B,
+	L = 0x4C
 
+};
 
 int main()
 {
+	Board mainBoard;
+	mainBoard.Init();
+
+	mainBoard.SpawnObject();
+
+	mainBoard.SpawnItem();
+
+	mainBoard.SpawnPlayer();
+	
+	//mainBoard.Render();
+
+
+	while (true)
+	{
+		mainBoard.Render();
+			mainBoard.PrintPlayerPoints();
+			if (mainBoard.HasEnded())
+			{
+				mainBoard.CheckForWinner();
+				return 0;
+			}
+
+
+		Sleep(100);												// 키보드 레이턴시 문제
+		//1khz 일때 이정도여야 정상 작동함 더 안좋은 키보드거나 더 좋은 키보드라면 줄이거나 늘릴수 있을듯.
+		while (_kbhit() == 0)										// 키보드 안누르고 있을때
+		{														// 한번 눌러도 키보드 반응이 늦어서 지속으로 입력되는 버그 발생
+
+		}
+		_getch();												// 한번 누르고 나서 버퍼를 비워줌? 아마도
+		if (GetAsyncKeyState((int)MOVIN::W) & 0x8000) // 커서 이동 시리즈
+		{
+			mainBoard.P1Up();
+		}
+		else if (GetAsyncKeyState((int)MOVIN::A) & 0x8000)
+		{
+			mainBoard.P1left();
+		}
+		else if (GetAsyncKeyState((int)MOVIN::S) & 0x8000)
+		{
+			mainBoard.P1Down();
+		}
+		else if (GetAsyncKeyState((int)MOVIN::D) & 0x8000)
+		{
+			mainBoard.P1RIght();
+		}
+		else if (GetAsyncKeyState((int)MOVIN::I) & 0x8000)
+		{
+			mainBoard.P2Up();
+		}
+		else if (GetAsyncKeyState((int)MOVIN::J) & 0x8000)
+		{
+			mainBoard.P2left();
+		}
+		else if (GetAsyncKeyState((int)MOVIN::K) & 0x8000)
+		{
+			mainBoard.P2Down();
+		}
+		else if (GetAsyncKeyState((int)MOVIN::L) & 0x8000)
+		{
+			mainBoard.P2RIght();
+		}
+		else if (GetAsyncKeyState(0x52) & 0x8000)	// R 
+		{
+			mainBoard.Init();
+
+			mainBoard.SpawnObject();
+
+			mainBoard.SpawnItem();
+
+			mainBoard.SpawnPlayer();							// 배열 내부값 재생성
+		}
+		else if (GetAsyncKeyState(0x51) & 0x8000)	// Q 입력받으면
+		{
+			mainBoard.CheckForWinner();
+			return 0;								// 프로그램 종료
+		}
+
+
+	}
 
 
 }

@@ -192,30 +192,30 @@ bool operator==(COORD rhs, COORD lhs)
 	return (rhs.X == lhs.X && rhs.Y == lhs.Y);
 }
 
+// 필요 없는 코드 - 이미 원본 좌표 있는데 왜씀?
+//COORD FindOriginPos(COORD pos) //현 위치에 있는 값의 origin 위치 받고 COORD값 반환
+//{
+//	/*원본 좌표로 감
+//		만약 현 좌표랑 원 좌표랑 같다면
+//		본인 위치 반환
+//		아니라면
+//		재귀함수 ON*/
+//	//pos는 처음 시작한 위치
+//	//NUMMEM로 원좌표 찾아가는 것임
+//	COORD temp = NUMMEM[((pos.Y * 10) + pos.X)]._currentPos;
+//	if (temp == NUMMEM[((temp.Y * 10) + temp.X)]._originPos)
+//	{
+//		return NUMMEM[((temp.Y * 10) + temp.X)]._originPos;
+//	}
+//	else
+//	{
+//		return FindOriginPos(temp);
+//	}
+//
+//	
+//}
 
-COORD FindOriginPos(COORD pos) //현 위치에 있는 값의 origin 위치 받고 COORD값 반환
-{
-	/*원본 좌표로 감
-		만약 현 좌표랑 원 좌표랑 같다면
-		본인 위치 반환
-		아니라면
-		재귀함수 ON*/
-	//pos는 처음 시작한 위치
-	//NUMMEM로 원좌표 찾아가는 것임
-	COORD temp = NUMMEM[((pos.Y * 10) + pos.X)]._currentPos;
-	if (temp == NUMMEM[((temp.Y * 10) + temp.X)]._originPos)
-	{
-		return NUMMEM[((temp.Y * 10) + temp.X)]._originPos;
-	}
-	else
-	{
-		return FindOriginPos(temp);
-	}
-
-	
-}
-
-int ChangeValue(int arr[ARR_SIZE][ARR_SIZE], COORD pos)
+void ChangeValue(int arr[ARR_SIZE][ARR_SIZE], COORD pos)
 {
 	int cnt{};
 	COORD temp = NUMMEM[((pos.Y * 10) + pos.X)]._currentPos;
@@ -254,22 +254,22 @@ int ChangeValue(int arr[ARR_SIZE][ARR_SIZE], COORD pos)
 			//NUMMEM[((pos.Y * 10) + pos.X)]._currentnum = NUMMEM[((pos.Y * 10) + pos.X)]._originnum; //willnum값은 변치 않을 예정이니 일단 이대로 냅두고...
 			//arr[pos.Y][pos.X] = NUMMEM[((pos.Y * 10) + pos.X)]._originnum;							// 배열값 원본으로 복귀
 			
-			int tempO = NUMMEM[((temp.Y * 10) + temp.X)]._currentnum = NUMMEM[((temp.Y * 10) + temp.X)]._originnum;
-			arr[pos.Y][pos.X] = tempO;
+			int tempO = NUMMEM[((temp.Y * 10) + temp.X)]._currentnum = NUMMEM[((temp.Y * 10) + temp.X)]._originnum; // 현재값 원본값으로 복귀
+			arr[pos.Y][pos.X] = tempO;																				// 똑같이 복귀
 
 		}
 	}
 	else
 	// 꺼져 있더라도 값 복구 해야 하니...
 	{
-		NUMMEM[((temp.Y * 10) + temp.X)]._currentnum = NUMMEM[((temp.Y * 10) + temp.X)]._originnum;
+		NUMMEM[((temp.Y * 10) + temp.X)]._currentnum = NUMMEM[((temp.Y * 10) + temp.X)]._originnum;					//똑같은 상황
 		arr[pos.Y][pos.X] = NUMMEM[((temp.Y * 10) + temp.X)]._originnum;
 	}
 	
 
 	
 
-	return 0;
+
 }
 
 void ChangetoUp(int arr[][ARR_SIZE], COORD& pos) // 배열 위 또는 아래 위치 변경
@@ -346,19 +346,19 @@ int main()
 	
 	COORD curPos{ uni(rd),uni(rd) };
 
-	int cnt = 0;
+
 	while (true)
 	{
 		Render(BArr,curPos);
 		ConsoleHelper::SetCursorPosition(2*curPos.X,curPos.Y);
 
-		Sleep(100); // 키보드 레이턴시 문제
-					//1khz 일때 이정도여야 정상 작동함 더 안좋은 키보드거나 더 좋은 키보드라면 줄이거나 늘릴수 있을듯.
-		while (_kbhit()==0)
-		{
+		Sleep(100);												// 키보드 레이턴시 문제
+																//1khz 일때 이정도여야 정상 작동함 더 안좋은 키보드거나 더 좋은 키보드라면 줄이거나 늘릴수 있을듯.
+		while (_kbhit()==0)										// 키보드 안누르고 있을때
+		{														// 한번 눌러도 키보드 반응이 늦어서 지속으로 입력되는 버그 발생
 
 		}
-		_getch();
+		_getch();												// 한번 누르고 나서 버퍼를 비워줌? 아마도
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 		{
 			//y축 기반 연산
@@ -378,8 +378,6 @@ int main()
 		{
 			//x축 기반 연산
 			ChangetoDown(BArr, curPos);
-			cnt++;
-			
 		}
 		else if (GetAsyncKeyState(VK_RETURN) & 0x8000)
 		{
@@ -412,13 +410,13 @@ int main()
 				continue;
 			ConsoleHelper::SetCursorPosition(2 * (curPos.X += 1), curPos.Y);
 		}
-		else if (GetAsyncKeyState(0x52) & 0x8000) // R
+		else if (GetAsyncKeyState(0x52) & 0x8000)	// R 
 		{
-			init(BArr);
+			init(BArr);								// 배열 내부값 재생성
 		}
-		else if (GetAsyncKeyState(0x51) & 0x8000) // Q 입력받으면
+		else if (GetAsyncKeyState(0x51) & 0x8000)	// Q 입력받으면
 		{
-			return 0;
+			return 0;								// 프로그램 종료
 		}
 		else if (GetAsyncKeyState((int)NUM::ON) & 0x8000) // 1
 		{
