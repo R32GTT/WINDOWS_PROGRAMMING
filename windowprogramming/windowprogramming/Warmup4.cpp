@@ -138,7 +138,8 @@ int main()
 	mainBoard.SpawnPlayer();
 	
 	//mainBoard.Render();
-
+	bool P1turn = true;
+	bool P2turn = false;
 
 	while (true)
 	{
@@ -150,6 +151,7 @@ int main()
 				return 0;
 			}
 
+			
 
 		Sleep(100);												// 키보드 레이턴시 문제
 		//1khz 일때 이정도여야 정상 작동함 더 안좋은 키보드거나 더 좋은 키보드라면 줄이거나 늘릴수 있을듯.
@@ -160,35 +162,76 @@ int main()
 		_getch();												// 한번 누르고 나서 버퍼를 비워줌? 아마도
 		if (GetAsyncKeyState((int)MOVIN::W) & 0x8000) // 커서 이동 시리즈
 		{
-			mainBoard.P1Up();
+			if (P1turn)
+			{
+				mainBoard.P1Up();
+				P1turn = false;
+				P2turn = true;
+			}
+
 		}
 		else if (GetAsyncKeyState((int)MOVIN::A) & 0x8000)
 		{
-			mainBoard.P1left();
+			if (P1turn)
+			{
+				mainBoard.P1left();
+				P1turn = false;
+				P2turn = true;
+			}
 		}
 		else if (GetAsyncKeyState((int)MOVIN::S) & 0x8000)
 		{
-			mainBoard.P1Down();
+			if (P1turn)
+			{
+				mainBoard.P1Down();
+				P1turn = false;
+				P2turn = true;
+			}
 		}
 		else if (GetAsyncKeyState((int)MOVIN::D) & 0x8000)
 		{
-			mainBoard.P1RIght();
+			if (P1turn)
+			{
+				mainBoard.P1RIght();
+				P1turn = false;
+				P2turn = true;
+			}
 		}
 		else if (GetAsyncKeyState((int)MOVIN::I) & 0x8000)
 		{
-			mainBoard.P2Up();
+			if (P2turn)
+			{
+				mainBoard.P2Up();
+				P2turn = false;
+				P1turn = true;
+			}
 		}
 		else if (GetAsyncKeyState((int)MOVIN::J) & 0x8000)
 		{
-			mainBoard.P2left();
+			if (P2turn)
+			{
+				mainBoard.P2left();
+				P2turn = false;
+				P1turn = true;
+			}
 		}
 		else if (GetAsyncKeyState((int)MOVIN::K) & 0x8000)
 		{
-			mainBoard.P2Down();
+			if (P2turn)
+			{
+				mainBoard.P2Down();
+				P2turn = false;
+				P1turn = true;
+			}
 		}
 		else if (GetAsyncKeyState((int)MOVIN::L) & 0x8000)
 		{
-			mainBoard.P2RIght();
+			if (P2turn)
+			{
+				mainBoard.P2RIght();
+				P2turn = false;
+				P1turn = true;
+			}
 		}
 		else if (GetAsyncKeyState(0x52) & 0x8000)	// R 
 		{

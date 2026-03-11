@@ -40,6 +40,9 @@
       <Filter>소스 파일\Base Board</Filter>
     </ClCompile>
     <ClCompile Include="Coord.cpp">
+      <Filter>소스 파일\Base Board</Filter>
+    </ClCompile>
+    <ClCompile Include="Warmup6.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -84,7 +84,7 @@ public:
 class ResTable
 {
 public:
-	ResTable(int rid, int rtm, int rsx, int rsy, int rsn) :_rmovid(rid), _rtime(rtm), _rsx(rsx), _rsy(rsy), _resnum(rsn) {}
+	ResTable(int rid, int rtm, int rsx, int rsy, int rsn,int rsc) :_rmovid(rid), _rtime(rtm), _rsx(rsx), _rsy(rsy), _resnum(rsn), rescount(rsc) {}
 	
 
 public:
@@ -93,6 +93,7 @@ public:
 	int _rsx;
 	int _rsy;
 	int _resnum;
+	int rescount;
 
 	int _seatcount;
 };
@@ -193,17 +194,23 @@ std::string GetMovieNameById(const std::vector<Cinema>& abs, int cid) // id로 �
 	}
 }
 
-void ReserveSt(std::vector<Cinema>& abs, int cid, int stime, std::pair<int, int> stxy, int resnum) // 좌석 예약
+void ReserveSt(std::vector<Cinema>& abs, int cid, int stime, std::pair<int, int> stxy, int resnum, int rescount) // 좌석 예약
 {
-	abs[cid - 1]._seatL[stime][stxy.second - 1][stxy.first - 1] = resnum;
-	rccnt++;
+	for (int i = 0; i < rescount; i++)
+	{
+		abs[cid - 1]._seatL[stime][stxy.second - 1][stxy.first - 1 + i] = resnum;
+		rccnt++;
+	}
 
 }
 
-void CancelSt(std::vector<Cinema>& abs, int cid, int stime, std::pair<int, int> stxy) // 좌석 취소
+void CancelSt(std::vector<Cinema>& abs, int cid, int stime, std::pair<int, int> stxy, int resc) // 좌석 취소
 {
-	abs[cid - 1]._seatL[stime][stxy.second - 1][stxy.first - 1] = 0;
-	rccnt--;
+	for (int i = 0; i < resc; i++)
+	{
+		abs[cid - 1]._seatL[stime][stxy.second - 1][stxy.first - 1 + i] = -1;
+		rccnt--;
+	}
 }
 
 enum class AllErrors
@@ -288,6 +295,7 @@ void Reserve(std::vector<Cinema>& abs) // 영화 예약
 	int stx;	//좌석x
 	int sty;	//좌석y
 	int resnum;	//예약번호
+	int rescount;
 	if (rccnt >= 100)
 	{
 		std::cout << "Reservation is full!" << std::endl;
@@ -366,7 +374,41 @@ void Reserve(std::vector<Cinema>& abs) // 영화 예약
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			continue;
 		}
+		std::cout << "Seat count? 1 ~ 4 :";
+		std::cin.clear();
+		std::cin >> rescount;
+		if (std::cin.fail())
+		{
+			std::cout << "Invaild Input! Please only enter coords in numeric!" << std::endl;
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			continue;
+		}
+		if (rescount > 4 || rescount < 0)
+		{
+			std::cout << "Seat count CANT'T EXCEED 1~4" << std::endl;
+			TakenSeat = true;
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			continue;
+		}
+		if (stx + rescount > 9)
+		{
+			std::cout << "TRY AGAIN" << std::endl;
+			TakenSeat = true;
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			continue;
+		}
+		for (int i = 1; i <= rescount; i++)
+		{
+			if (abs[cid - 1]._seatL[stime][sty - 1][stx - 1 + i] != -1 )
+			{
+				std::cout << "Seat Already Reserved!" << std::endl;
+				TakenSeat = true;
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				continue;
+			}
 
+		}
 	} while ((stx > 10) || (stx < 1) || (sty > 10) || (sty < 1) || TakenSeat);
 
 	do
@@ -374,13 +416,14 @@ void Reserve(std::vector<Cinema>& abs) // 영화 예약
 		resnum = dis(rd);
 
 	} while (CheckResnum(resnum));
-	Resmap.emplace(std::make_pair(resnum, ResTable(cid, stime, stx, sty, resnum)));
+	Resmap.emplace(std::make_pair(resnum, ResTable(cid, stime, stx, sty, resnum, rescount)));
 
-	ReserveSt(abs, cid, stime, std::make_pair(stx, sty), resnum);
+	ReserveSt(abs, cid, stime, std::make_pair(stx, sty), resnum, rescount);
 
 	std::cout << "Reservation:" << "\n" << "\t" << "Movie name: " << GetMovieNameById(abs, cid)
 		<< "\n" << "\t" << "Time: " << abs[cid - 1]._screenTime[stime]
 		<< "\n" << "\t" << "Seat number: " << '(' << stx << ", " << sty << ')'
+		<< "\n" << "\t" << "Seat count : " << '(' << rescount << ')'
 		<< "\n" << "\t" << "Your reservation number is " << resnum << ". Thank you for your reservation!" << std::endl;
 	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -416,6 +459,7 @@ void Cancel(std::vector<Cinema>& abs)
 	int stime = (Resmap.find(in2))->second._rtime;
 	int stx = (Resmap.find(in2))->second._rsx;
 	int sty = (Resmap.find(in2))->second._rsy;
+	int resc = (Resmap.find(in2))->second.rescount;
 
 
 
@@ -423,9 +467,10 @@ void Cancel(std::vector<Cinema>& abs)
 		<< "\n" << "\t" << "Movie name: " << GetMovieNameById(abs, id)
 		<< "\n" << "\t" << "Time: " << abs[id - 1]._screenTime[stime]
 		<< "\n" << "\t" << "Seat number: " << '(' << stx << ", " << sty << ')'
+		<< "\n" << "\t" << "Seat count : " << '(' << resc << ')'
 		<< "\n" << "\t" << "Reservation is cancelled. Please, come again!" << std::endl;
 	Resmap.erase(in2);
-	CancelSt(abs, id, stime, std::make_pair(stx, sty));
+	CancelSt(abs, id, stime, std::make_pair(stx, sty),resc);
 	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
