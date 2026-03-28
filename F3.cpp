@@ -159,24 +159,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case VK_PRIOR:
+			hDC = GetDC(hWnd);
+			tems.clear();
 			Cursor.y = (Cursor.y + 7) % 10;
 			GetCaretPos(&caretPos);
 			if (!Notepad[Cursor.y].wstr.empty())
 			{
-
+				Cursor.x = Notepad[Cursor.y].wstr.size();
+				temp1 = Notepad[Cursor.y].wstr;
+				GetTextExtentPointW(hDC, temp1.c_str(), temp1.size(), &size);
+				SetCaretPos(x + size.cx, TM.tmHeight * Cursor.y);
 			}
 			else
 			{
-
+				Cursor.x = 0;
+				SetCaretPos(x, TM.tmHeight * Cursor.y);
 			}
-			tems.clear();
 			
+			ReleaseDC(hWnd, hDC);
 			break;
 		case VK_NEXT:
 			Cursor.y = (Cursor.y + 3) % 10;
 			GetCaretPos(&caretPos);
+			hDC = GetDC(hWnd);
 			tems.clear();
 
+			GetCaretPos(&caretPos);
+			if (!Notepad[Cursor.y].wstr.empty())
+			{
+				Cursor.x = Notepad[Cursor.y].wstr.size();
+				temp1 = Notepad[Cursor.y].wstr;
+				GetTextExtentPointW(hDC, temp1.c_str(), temp1.size(), &size);
+				SetCaretPos(x + size.cx, TM.tmHeight * Cursor.y);
+			}
+			else
+			{
+				Cursor.x = 0;
+				SetCaretPos(x, TM.tmHeight * Cursor.y);
+			}
 			break;
 		case VK_LEFT:
 			GetCaretPos(&caretPos);
@@ -340,7 +360,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			ReleaseDC(hWnd, hDC);
 			break;
 		case VK_DELETE:
-
+			if(Notepad[Cursor.y].wstr.empty())
+				break;
+			int front, last;
+			for (int i = Cursor.x; i <= Notepad[Cursor.y].wstr.size(); i++) // 후열 공백 찾기 
+			{
+				if (Notepad[Cursor.y].wstr[i] == L' ')
+				{
+					last = i;
+					break;
+				}
+				else if (i == Notepad[Cursor.y].wstr.size())
+				{
+					last = i;
+				}
+			}
+			for (int i = Cursor.x; i >= 0; i--) // 전열 공백 찾기 
+			{
+				if (Notepad[Cursor.y].wstr[i] == L' ')
+				{
+					front = i;
+					break;
+				}
+				else if (i == 0)
+				{
+					front = 0;
+				}
+			}
+			Notepad[Cursor.y].wstr.erase(front, last);
+			Cursor.x = front;
+			hDC = GetDC(hWnd);
+			GetCaretPos(&caretPos);
+			tems.clear();
+			GetTextExtentPointW(hDC, Notepad[Cursor.y].wstr.c_str(), Notepad[Cursor.y].wstr.size(), &size);
+			SetCaretPos(x + size.cx, caretPos.y);
+			ReleaseDC(hWnd, hDC);
+			InvalidateRect(hWnd, NULL, true);
 			break;
 		}
 		break;
@@ -380,11 +435,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SIZE size;
 			POINT caretPos;
 			GetCaretPos(&caretPos);
+			tems.clear();
+			if (Cursor.y > 0 && Cursor.x == 0)
+			{
+				Cursor.y--;
+				Cursor.x = Notepad[Cursor.y].wstr.size();
+				tems = Notepad[Cursor.y].wstr;
+				GetTextExtentPointW(hDC, tems.c_str(), tems.size(), &size);
+				
+				SetCaretPos(x + size.cx, caretPos.y - TM.tmHeight);
+				ReleaseDC(hWnd, hDC);
+				break;
+			}
 			if (Notepad[Cursor.y].wstr.empty())
 				break;
-			if (Cursor.x == 0)
+			if (Cursor.y == 0 && Cursor.x == 0)
 				break;
-			tems.clear();
+			
+			
 			temp1 = Notepad[Cursor.y].wstr[Cursor.x - 1];
 			GetTextExtentPointW(hDC, temp1.c_str(), 1, &size);
 			if (Notepad[Cursor.y].wstr[Cursor.x] == NULL)
@@ -401,7 +469,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			Cursor.x--;
 			SetCaretPos(caretPos.x - size.cx, caretPos.y);
 
-			GetCaretPos(&caretPos);
+
 
 			ReleaseDC(hWnd, hDC);
 			break;
@@ -415,21 +483,72 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case VK_TAB:
 			tems.clear();
 			GetCaretPos(&caretPos);
-			if (Cursor.y < 9 && Notepad[Cursor.y].wstr.size() < 30)
+			if (Cursor.y < 9)
 			{
-				if ((Cursor.x < Notepad[Cursor.y].wstr.size() || Notepad[Cursor.y].wstr.empty()) && (Notepad[Cursor.y].wstr.size() + 4) <= 30)
+				std::wstring temp3;
+				temp3 = L"    ";
+				
+				int delta;
+				if (Notepad[Cursor.y].wstr.size() <= 26)
 				{
-					for (int i = 0; i < 4; i++)
-					{
-						Notepad[Cursor.y].wstr.insert(Cursor.x++, L" ");
-					}
+					Notepad[Cursor.y].wstr.insert(Cursor.x, temp3);
+					Cursor.x += 4;
 					hDC = GetDC(hWnd);
-					GetTextExtentPointW(hDC, L" ", 1, &size);
+					GetTextExtentPointW(hDC, temp3.c_str(), temp3.size(), &size);
 					ReleaseDC(hWnd, hDC);
-					SetCaretPos(x + (size.cx * 4), caretPos.y);
+					SetCaretPos(caretPos.x + size.cx, caretPos.y);
 				}
-				else if ((Notepad[Cursor.y].wstr.size() + 4) > 30)
+				else if(Cursor.x >= 27)
 				{
+					delta = 30 - Notepad[Cursor.y].wstr.size();
+					temp3 = temp3.substr(0, delta);
+					Notepad[Cursor.y].wstr.insert(Cursor.x, temp3);
+					Cursor.x = 0;
+					Cursor.y++;
+					hDC = GetDC(hWnd);
+					GetTextExtentPointW(hDC, temp3.c_str(), temp3.size(), &size);
+					ReleaseDC(hWnd, hDC);
+					SetCaretPos(x, caretPos.y + TM.tmHeight);
+				}
+				else
+				{
+					delta = 30 - Notepad[Cursor.y].wstr.size();
+					temp3 = temp3.substr(0, delta);
+					Notepad[Cursor.y].wstr.insert(Cursor.x, temp3);
+					Cursor.x += delta;
+					hDC = GetDC(hWnd);
+					GetTextExtentPointW(hDC, temp3.c_str(), temp3.size(), &size);
+					ReleaseDC(hWnd, hDC);
+					SetCaretPos(caretPos.x + size.cx, caretPos.y);
+				}
+
+
+			}
+			else if (Cursor.y == 9)
+			{
+				std::wstring temp3;
+				temp3 = L"    ";
+
+				int delta;
+				if (Notepad[Cursor.y].wstr.size() <= 26)
+				{
+					Notepad[Cursor.y].wstr.insert(Cursor.x, temp3);
+					Cursor.x += 4;
+					hDC = GetDC(hWnd);
+					GetTextExtentPointW(hDC, temp3.c_str(), temp3.size(), &size);
+					ReleaseDC(hWnd, hDC);
+					SetCaretPos(caretPos.x + size.cx, caretPos.y);
+				}
+				else
+				{
+					delta = 30 - Notepad[Cursor.y].wstr.size();
+					temp3 = temp3.substr(0, delta);
+					Notepad[Cursor.y].wstr.insert(Cursor.x, temp3);
+					Cursor.x += delta;
+					hDC = GetDC(hWnd);
+					GetTextExtentPointW(hDC, temp3.c_str(), temp3.size(), &size);
+					ReleaseDC(hWnd, hDC);
+					SetCaretPos(caretPos.x + size.cx, caretPos.y);
 				}
 			}
 			break;
